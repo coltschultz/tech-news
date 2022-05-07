@@ -1,28 +1,42 @@
-const User = require('./User');
+// import all models
 const Post = require('./Post');
+const User = require('./User');
 const Vote = require('./Vote');
 const Comment = require('./Comment');
 
-//define user/post associations
+// create associations
 User.hasMany(Post, {
-  foreignKey: 'user_id',
+  foreignKey: 'user_id'
 });
 
 Post.belongsTo(User, {
   foreignKey: 'user_id',
+  onDelete: 'SET NULL'
 });
 
-//define vote's associations
 User.belongsToMany(Post, {
   through: Vote,
   as: 'voted_posts',
-  foreignKey: 'user_id'
+
+  foreignKey: 'user_id',
+  onDelete: 'SET NULL'
 });
 
 Post.belongsToMany(User, {
   through: Vote,
   as: 'voted_posts',
-  foreignKey: 'post_id'
+  foreignKey: 'post_id',
+  onDelete: 'SET NULL'
+});
+
+Vote.belongsTo(User, {
+  foreignKey: 'user_id',
+  onDelete: 'SET NULL'
+});
+
+Vote.belongsTo(Post, {
+  foreignKey: 'post_id',
+  onDelete: 'SET NULL'
 });
 
 User.hasMany(Vote, {
@@ -32,25 +46,20 @@ User.hasMany(Vote, {
 Post.hasMany(Vote, {
   foreignKey: 'post_id'
 });
-//the vote table will have 3 columns. id, user_id, and post_id.
-//user_id and post_id will come up multiple times in each column, but cannot have the same matching id's occur twice 
-//(aka, a user can only vote once, and a post can only have a user vote once)
-//and to get the number of votes on a post, perform a count on the number of times post_id occors
-//and to get the amout of votes a user made, perform a count on the number of times user_id occors
 
-//define Comment's associations (one-to-many)
-//a single comment belongs to a single post, but a single post can have many comments
-//a single comment belongs to a single user, but a user can have many comments
 Comment.belongsTo(User, {
-  foreignKey: 'user_id'
+  foreignKey: 'user_id',
+  onDelete: 'SET NULL'
 });
 
 Comment.belongsTo(Post, {
-  foreignKey: 'post_id'
+  foreignKey: 'post_id',
+  onDelete: 'SET NULL'
 });
 
 User.hasMany(Comment, {
-  foreignKey: 'user_id'
+  foreignKey: 'user_id',
+  onDelete: 'SET NULL'
 });
 
 Post.hasMany(Comment, {
